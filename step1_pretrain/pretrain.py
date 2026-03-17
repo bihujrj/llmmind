@@ -103,7 +103,7 @@ if __name__ == "__main__":
     parser.add_argument("--save_dir", type=str, default="../out", help="模型保存目录")
     parser.add_argument('--save_weight', default='pretrain', type=str, help="保存权重的前缀名")
     parser.add_argument("--epochs", type=int, default=1, help="训练轮数（建议1轮zero或2-6轮充分训练）")
-    parser.add_argument("--batch_size", type=int, default=2, help="batch size")
+    parser.add_argument("--batch_size", type=int, default=4, help="batch size")
     parser.add_argument("--learning_rate", type=float, default=5e-4, help="初始学习率")
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu", help="训练设备")
     # parser.add_argument("--dtype", type=str, default="bfloat16", help="混合精度类型")
@@ -130,8 +130,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # wandb
-    # apk_key: 24c78f22ce142b7c4b75c3986f14f8c86ca68a64
+
+    #python -m step1_pretrain.pretrain  --data_path ../llm_data/pretrain_hq.jsonl
 
     # ========== 1. 初始化环境和随机种子 ==========
     local_rank = init_distributed_mode()
