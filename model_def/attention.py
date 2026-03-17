@@ -26,9 +26,9 @@ class Attention(nn.Module):
                 cos,sin,
                 unsqueeze_dim=1):
         def rotate(x):
-            return torch.cat(-x[...,x.shape[-1]//2:],x[...,:x.shape[-1]//2],dim=-1)
-        q_embed=(q*cos.unsqueeze(unsqueeze_dim+(rotate(q)*sin.unsqueeze(unsqueeze_dim))))
-        k_embed=(k*cos.unsqueeze(unsqueeze_dim+(rotate(k)*sin.unsqueeze(unsqueeze_dim))))
+            return torch.cat((-x[...,x.shape[-1]//2:],x[...,:x.shape[-1]//2]),dim=-1)
+        q_embed=(q*cos.unsqueeze(unsqueeze_dim))+(rotate(q)*sin.unsqueeze(unsqueeze_dim))
+        k_embed=(k*cos.unsqueeze(unsqueeze_dim))+(rotate(k)*sin.unsqueeze(unsqueeze_dim))
 
         return q_embed,k_embed
 
