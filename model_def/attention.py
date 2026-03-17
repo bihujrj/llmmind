@@ -20,6 +20,7 @@ class Attention(nn.Module):
         self.o_proj=nn.Linear(args.hidden_size,args.hidden_size)
         self.attn_dropout=nn.Dropout(args.attn_dropout)
         self.residual_dropout=nn.Dropout(args.residual_dropout)
+        self.num_attention_head=args.num_attention_head
 
     def pos_emb(self,q,k,
                 cos,sin,
