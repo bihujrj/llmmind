@@ -3,20 +3,21 @@ from typing import Tuple, Optional
 import torch
 from torch import nn
 from transformers import PretrainedConfig
-from llmconfig import LlmConfig
+from model_def.llmconfig import LlmConfig
 from model_def.pe import Rope
 import torch.nn.functional as F
 
-class Attention(nn.Model):
+class Attention(nn.Module):
 
     def __init__(self,args:LlmConfig):
-        super().__init_()
+        super().__init__()
         self.head_dim=args.hidden_size//args.num_attention_head
-        self.kv_rep=self.n_head//self.kv_head   ##kv压缩倍数 for memory saving
+        self.kv_head=4
+        self.kv_rep=args.num_attention_head//self.kv_head   ##kv压缩倍数 for memory saving
         self.q_proj=nn.Linear(args.hidden_size,args.hidden_size)#输出要作为下一级输入
-        self.k_proj=nn.Linear(args.hidden_size,args.kv_head*self.head_dim)
-        self.v_proj=nn.Linear(args.hidden_size,args.kv_head*self.head_dim)
-        self.o_proj=nn.Linear(args.hidden_size,args.kv_head*self.head_dim)
+        self.k_proj=nn.Linear(args.hidden_size,self.kv_head*self.head_dim)
+        self.v_proj=nn.Linear(args.hidden_size,self.kv_head*self.head_dim)
+        self.o_proj=nn.Linear(args.hidden_size,args.hidden_size)
         self.attn_dropout=nn.Dropout(args.attn_dropout)
         self.residual_dropout=nn.Dropout(args.residual_dropout)
 
@@ -41,7 +42,8 @@ class Attention(nn.Model):
     def forward(self,
                 x:torch.Tensor,
                 kv_cache:Optional[Tuple[torch.Tensor,torch.Tensor]]=None,
-                use_cache:bool=0
+                use_cache:bool=0,
+                attention_mask:Optional[torch.Tensor]=None
                 ):
         bsize,dat_len,_=x.shape
         xq,xk,xv=self.q_proj(x),self.k_proj(x),self.v_proj(x)

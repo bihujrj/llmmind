@@ -10,14 +10,13 @@ class Rope:
     def __init__(self, dim: int = 512,
                  end: int = 32 * 1024,
                  rope_scaling:bool=0):
-        # 生成频率
-        # freqs = 1.0 / (self.rope_base ** (torch.arange(0, dim, 2)[:(dim // 2)].float() / dim))
-        # print(torch.arange(0, dim, 2)[:(dim // 2)].float() )
-        # print(torch.arange(0, dim, 2)[:(dim // 2)].float() / dim)
+        #(rope_base**(torch.arange(0,dim,2)[:dim//2].float()/dim))为1到1e6之间增函数
+        #1.0/(rope_base**(torch.arange(0,dim,2)[:dim//2].float()/dim))为小于1降函数，位置越靠前频率越高
         freqs = 1.0 / (self.rope_base ** (torch.arange(0, dim, 2)[:(dim // 2)].float() / dim))
         #NTK-aware 插值 方法，最初由 Reddit 用户 bloc97 在 2023 年提出
         # YaRN 论文（YaRN: Efficient Context Window Extension of Large Language Models）系统记录和改进
         # if rope_scaling:
+        # 外推,频率压缩
         #     # 只有当序列长度超过原始最大长度时才应用缩放
         #     if end / self.input_max > 1.0:
         #         # 计算需要缩放的维度范围：根据beta_fast和beta_slow确定插值的起始和结束维度
