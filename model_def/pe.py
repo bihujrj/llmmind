@@ -11,7 +11,8 @@ class Rope:
                  end: int = 32 * 1024,
                  rope_scaling:bool=0):
         #(rope_base**(torch.arange(0,dim,2)[:dim//2].float()/dim))为1到1e6之间增函数
-        #1.0/(rope_base**(torch.arange(0,dim,2)[:dim//2].float()/dim))为小于1降函数，位置越靠前频率越高
+        #1.0/(rope_base**(torch.arange(0,dim,2)[:dim//2].float()/dim))为小于1降函数，位置越靠前频率越高，相当于将data调制到了freqs频率(data*cos(freqs*data))
+        #一定程度上相当于将序列数据做了正交投影，正交频率由位置决定，
         freqs = 1.0 / (self.rope_base ** (torch.arange(0, dim, 2)[:(dim // 2)].float() / dim))
         #NTK-aware 插值 方法，最初由 Reddit 用户 bloc97 在 2023 年提出
         # YaRN 论文（YaRN: Efficient Context Window Extension of Large Language Models）系统记录和改进
