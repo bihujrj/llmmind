@@ -47,7 +47,11 @@ class Attention(nn.Module):
         if rep==1:
             return x
         else:
-            return x[:,:,None,:].expand(bsize,dat_len,kv_head,rep,head_dim).reshape(bsize,dat_len,kv_head*rep,head_dim)
+            # return x[:,:,None,:].expand(bsize,dat_len,kv_head,rep,head_dim).reshape(bsize,dat_len,kv_head*rep,head_dim)
+            # Insert a new dimension after kv_head (dim=3)
+            x = x.unsqueeze(3)  # (bsize, dat_len, kv_head, 1, head_dim)
+            x = x.expand(bsize, dat_len, kv_head, rep, head_dim)
+            return x.reshape(bsize, dat_len, kv_head * rep, head_dim)
 
     def forward(self,
                 x:torch.Tensor,
