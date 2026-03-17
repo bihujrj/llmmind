@@ -23,5 +23,11 @@ class FeedForward(nn.Module):
         self.down_proj=nn.Linear(config.feedforward_dim,config.hidden_size,bias=False)
         self.dropout=nn.Dropout(config.dropout)
 
-    def forwar(self,x):
-        return self.dropout(self.down_proj(self.act_fn(self.gate_proj(x))*self.up_proj(x)))
+    def forward(self,x):
+        # return self.dropout(self.down_proj(self.act_fn(self.gate_proj(x))*self.up_proj(x)))
+        # SwiGLU: (silu(gate(x)) * up(x)) projected down
+        gate = self.gate_proj(x)
+        up = self.up_proj(x)
+        x = self.act_fn(gate) * up
+        x = self.down_proj(x)
+        return x
