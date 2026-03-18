@@ -12,7 +12,7 @@ class Attention(nn.Module):
         self.config = config
         self.head_dim = config.hidden_size // config.num_attention_head
         self.kv_heads = getattr(config, 'kv_heads', 4)  # 允许从配置读取
-        self.kv_rep = config.num_attention_heads // self.kv_heads
+        self.kv_rep = config.num_attention_head // self.kv_heads
 
         # 线性投影
         self.q_proj = nn.Linear(config.hidden_size, config.hidden_size, bias=False)
@@ -73,7 +73,7 @@ class Attention(nn.Module):
         v = self.v_proj(x)
 
         # 2. 重塑为多头形式
-        q = q.view(bsz, seq_len, self.config.num_attention_heads, self.head_dim)
+        q = q.view(bsz, seq_len, self.config.num_attention_head, self.head_dim)
         k = k.view(bsz, seq_len, self.kv_heads, self.head_dim)
         v = v.view(bsz, seq_len, self.kv_heads, self.head_dim)
 
