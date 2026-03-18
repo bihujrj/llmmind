@@ -27,7 +27,7 @@ from utils.train_tools import (
 
 warnings.filterwarnings('ignore')
 
-def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start_step=0):
+def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start_step=0,llm_config=None):
     model.train()
     total_steps = len(loader) + start_step
     start_time = time.time()
@@ -102,6 +102,7 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
 
                 # 保存完整训练状态（用于续训）
                 lm_checkpoint(
+                    llm_config=llm_config,
                     model=raw_model,
                     optimizer=optimizer,
                     scaler=scaler,
@@ -274,7 +275,8 @@ def main():
             scaler=scaler,
             args=args,
             wandb=wandb,
-            start_step=skip
+            start_step=skip,
+            llm_config=lm_config
         )
 
         # 每个 epoch 结束后重置 start_step 为 0（下一个 epoch 从头开始）
