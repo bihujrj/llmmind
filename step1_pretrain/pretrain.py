@@ -215,7 +215,7 @@ def main():
     # ----- 8. 恢复训练状态（续训）-----
     start_epoch, start_step = 0, 0
     if args.from_resume:
-        ckpt_data = lm_checkpoint(config, weight=args.save_weight, save_dir=args.save_dir, load_only=True)
+        ckpt_data = lm_checkpoint(lm_config, weight=args.save_weight, save_dir=args.save_dir, load_only=True)
         if ckpt_data:
             model.load_state_dict(ckpt_data['model'])
             optimizer.load_state_dict(ckpt_data['optimizer'])
