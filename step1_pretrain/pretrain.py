@@ -63,7 +63,14 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
         if step % args.log_interval == 0 or step == total_steps:
             elapsed = time.time() - start_time
             current_loss = loss.item() * args.accumulation_steps
-            aux_loss = outputs.aux_loss.item() if outputs.aux_loss is not None else 0.0
+            # aux_loss = outputs.aux_loss.item() if outputs.aux_loss is not None else 0.0
+            if outputs.aux_loss is not None:
+                if hasattr(outputs.aux_loss, 'item'):
+                    current_aux_loss = outputs.aux_loss.item()
+                else:
+                    current_aux_loss = float(outputs.aux_loss)
+            else:
+                current_aux_loss = 0.0
             logits_loss = current_loss - aux_loss
             current_lr = optimizer.param_groups[-1]['lr']
             eta_remain = (elapsed / step) * (total_steps - step) / 60  # 剩余分钟
