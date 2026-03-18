@@ -77,14 +77,14 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
 
             Logger(
                 f'Epoch [{epoch+1}/{args.epochs}] Step {step}/{total_steps} | '
-                f'Loss: {current_loss:.4f} (logits: {logits_loss:.4f}, aux: {aux_loss:.4f}) | '
+                f'Loss: {current_loss:.4f} (logits: {logits_loss:.4f}, aux: {current_aux_loss:.4f}) | '
                 f'LR: {current_lr:.8f} | ETA: {eta_remain:.1f} min'
             )
             if wandb:
                 wandb.log({
                     'loss': current_loss,
                     'logits_loss': logits_loss,
-                    'aux_loss': aux_loss,
+                    'aux_loss': current_aux_loss,
                     'learning_rate': current_lr,
                     'step': step
                 })
