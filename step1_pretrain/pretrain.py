@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
 
     #python -m step1_pretrain.pretrain  --data_path ../llm_data/pretrain_hq.jsonl
-    #python -m step1_pretrain.pretrain --tokenizer_path /Users/hub/my_alg/llmmind/model_def --data_path ../../llm_data/pretrain_hq.jsonl
+    #python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl
 
     # ========== 1. 初始化环境和随机种子 ==========
     local_rank = init_distributed_mode()
