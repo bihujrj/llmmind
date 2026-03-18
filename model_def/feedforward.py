@@ -22,7 +22,8 @@ class FeedForward(nn.Module):
         self.up_proj=nn.Linear(config.hidden_size,config.feedforward_dim,bias=False)
         self.down_proj=nn.Linear(config.feedforward_dim,config.hidden_size,bias=False)
         self.dropout=nn.Dropout(config.dropout)
-
+        if torch.cuda.is_available():
+            self.cuda()
     def forward(self,x):
         # return self.dropout(self.down_proj(self.act_fn(self.gate_proj(x))*self.up_proj(x)))
         # SwiGLU: (silu(gate(x)) * up(x)) projected down

@@ -23,7 +23,8 @@ class DeepBlock(nn.Module):
         self.input_norm=RMSNorm(config.hidden_size,eps=config.norm_eps)
         self.post_norm=RMSNorm(config.hidden_size,eps=config.norm_eps)
         self.feedforward=FeedForward(config)
-
+        if torch.cuda.is_available():
+            self.cuda()
     def forward(self,
                 input,
                 position_embedding,

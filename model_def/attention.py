@@ -30,7 +30,8 @@ class Attention(nn.Module):
         # 截取到最大长度并注册为 buffer（自动随模型移动设备）
         self.register_buffer("cos_cached", cos[:max_seq_len].contiguous(), persistent=False)
         self.register_buffer("sin_cached", sin[:max_seq_len].contiguous(), persistent=False)
-
+        if torch.cuda.is_available():
+            self.cuda()
     def rotate_half(self, x: torch.Tensor) -> torch.Tensor:
         """旋转一半维度（用于 RoPE）"""
         x1, x2 = x[..., : x.shape[-1] // 2], x[..., x.shape[-1] // 2 :]

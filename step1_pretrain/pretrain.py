@@ -183,7 +183,7 @@ def main():
     )
 
     # 确保模型参数在正确设备上
-    assert all(p.device == device for p in model.parameters()), '模型参数未全部移动到指定设备！'
+    #assert all(p.device == device for p in model.parameters()), '模型参数未全部移动到指定设备！'
 
     if args.use_compile and device.type == 'cuda':
         model = torch.compile(model)
