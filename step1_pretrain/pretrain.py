@@ -107,7 +107,7 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
 
 def main():
     parser = argparse.ArgumentParser(description="MiniMind Pretraining (GPU Optimized)")
-    parser.add_argument('--save_dir', type=str, default='./out', help='模型保存目录')
+    parser.add_argument('--save_dir', type=str, default='../out', help='模型保存目录')
     parser.add_argument('--save_weight', default='pretrain', type=str, help='权重前缀')
     parser.add_argument('--epochs', type=int, default=1, help='训练轮数')
     parser.add_argument('--batch_size', type=int, default=4, help='批次大小')
@@ -124,7 +124,7 @@ def main():
     parser.add_argument('--max_seq_len', type=int, default=340, help='最大序列长度')
     parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
     parser.add_argument('--data_path', type=str, default='../../../llm_data/pretrain_hq.jsonl', help='数据路径')
-    parser.add_argument('--tokenizer_path', type=str, default='../model_ref', help='分词器路径')
+    parser.add_argument('--tokenizer_path', type=str, default='/Users/hub/my_alg/llmmind/model_def', help='分词器路径')
     parser.add_argument('--from_weight', type=str, default='pretrain', help='初始权重路径')
     parser.add_argument('--from_resume', type=int, default=0, choices=[0,1], help='是否从checkpoint恢复')
     parser.add_argument('--use_wandb', action='store_true', help='是否使用wandb')
@@ -134,7 +134,7 @@ def main():
     parser.add_argument('--force_gpu', action='store_true', help='如果没有GPU则报错')
     args = parser.parse_args()
 
-    # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl
+    # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl --save_dir ./out
 
     # ----- 1. 初始化分布式环境 -----
     local_rank = init_distributed_mode()
