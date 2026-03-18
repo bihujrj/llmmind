@@ -27,7 +27,6 @@ class DeepBlock(nn.Module):
             self.cuda()
     def forward(self,
                 input,
-                position_embedding,
                 past_kv: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
                 use_cache=None,
                 attention_mask=None):
