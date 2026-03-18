@@ -132,6 +132,8 @@ def main():
     parser.add_argument('--use_compile', type=int, default=0, choices=[0,1], help='是否使用torch.compile')
     parser.add_argument('--wandb_key', type=str, default=None, help='wandb API key')
     parser.add_argument('--force_gpu', action='store_true', help='如果没有GPU则报错')
+    parser.add_argument('--use_amp', type=bool, default=False, help='混合精度')
+
     args = parser.parse_args()
 
     # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl --save_dir ./out
