@@ -55,7 +55,7 @@ class LlmModel(nn.Module):
 
         past_kv_=past_kv or [None]*len(self.layers)
         for layer_i,(layer,past_kv_item) in enumerate(zip(self.layers,past_kv_)):
-            embeded_dat,cur=layer(embeded_dat,position_embedding,past_kv_item,use_cache,attention_mask)
+            embeded_dat,cur=layer(embeded_dat,past_kv_item,use_cache,attention_mask)
             present.append(cur)
         #当使用moe时，返回0张量，不影响主损失函数
         # aux_loss=sum([l.feedforward.aux_loss for l in self.layers if isinstance(l.feedforward,Moe)],embeded_dat.new_zeros(1).squeeze)

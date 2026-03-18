@@ -32,7 +32,8 @@ class DeepBlock(nn.Module):
                 use_cache=None,
                 attention_mask=None):
         residual=input
-        attn_output,cur_kv=self.attn(self.input_norm(input),position_embedding,past_kv,attention_mask)
+        # attn_output,cur_kv=self.attn(self.input_norm(input),position_embedding,past_kv,attention_mask)
+        attn_output, cur_kv = self.attn(self.input_norm(input), past_kv, use_cache, attention_mask)
         attn_output+=residual
         fd_output=attn_output+self.feedforward(self.post_norm(attn_output))
         return fd_output,cur_kv
