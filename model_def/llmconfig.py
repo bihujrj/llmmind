@@ -28,7 +28,7 @@ class LlmConfig(PretrainedConfig):
         self.norm_eps=norm_eps
         self.feedforward_dim=feedforward_dim
         self.feedforward_act=feedforward_act
-        self.use_ome=use_moe
+        self.use_moe=use_moe
         # self.head_dim=head_dim
 
 

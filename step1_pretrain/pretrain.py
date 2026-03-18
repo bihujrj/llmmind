@@ -169,6 +169,8 @@ def main():
     #     attn_dropout=0.0,
     #     residual_dropout=0.0,
     # )
+    # lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_hidden_layers,
+    #                       use_moe=bool(args.use_moe))
     lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_hidden_layers,
                           use_moe=bool(args.use_moe))
 
