@@ -23,7 +23,8 @@ class LlmModel(nn.Module):
         self.deep_layers=config.deep_layers
         self.layers=nn.ModuleList([DeepBlock(l,config) for l in range(config.deep_layers)])
         self.dropout=nn.Dropout(config.dropout)
-
+        if torch.cuda.is_available():
+            self.cuda()
     # def position_embedding(self,dim:int,
     #                        end:int=32*1024,
     #                        rope_base:float=1e6,
