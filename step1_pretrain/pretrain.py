@@ -159,20 +159,22 @@ def main():
     os.makedirs(args.save_dir, exist_ok=True)
 
     # ----- 4. 模型配置 -----
-    config = LlmConfig(
-        hidden_size=args.hidden_size,
-        num_hidden_layers=args.num_hidden_layers,
-        num_attention_heads=8,                # 可从参数读取
-        kv_heads=4,                            # GQA 的 kv head 数
-        use_moe=bool(args.use_moe),
-        max_seq_len=args.max_seq_len,
-        attn_dropout=0.0,
-        residual_dropout=0.0,
-    )
+    # config = LlmConfig(
+    #     hidden_size=args.hidden_size,
+    #     # num_deep_layers=args.num_hidden_layers,
+    #     num_attention_heads=8,                # 可从参数读取
+    #     kv_heads=4,                            # GQA 的 kv head 数
+    #     use_moe=bool(args.use_moe),
+    #     max_seq_len=args.max_seq_len,
+    #     attn_dropout=0.0,
+    #     residual_dropout=0.0,
+    # )
+    lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_hidden_layers,
+                          use_moe=bool(args.use_moe))
 
     # ----- 5. 加载模型和分词器 -----
     model, tokenizer = init_model(
-        config,
+        lm_config,
         from_weight=args.from_weight if args.from_weight != 'none' else None,
         tokenizer_path=args.tokenizer_path,
         device=device
