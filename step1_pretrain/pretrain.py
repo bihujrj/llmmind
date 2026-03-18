@@ -134,6 +134,7 @@ if __name__ == "__main__":
 
 
     #python -m step1_pretrain.pretrain  --data_path ../llm_data/pretrain_hq.jsonl
+    #python -m step1_pretrain.pretrain --tokenizer_path /Users/hub/my_alg/llmmind/model_def --data_path ../../llm_data/pretrain_hq.jsonl
 
     # ========== 1. 初始化环境和随机种子 ==========
     local_rank = init_distributed_mode()
@@ -168,7 +169,7 @@ if __name__ == "__main__":
         wandb.init(project=args.wandb_project, name=wandb_run_name, id=wandb_id, resume=resume)
 
     # ========== 5. 定义模型、数据、优化器 ==========
-    model, tokenizer = init_model(lm_config, args.from_weight,tokenizer_path=args.tokenizer_path, device=args.device)
+    model, tokenizer = init_model(lm_config, from_weight=args.from_weight,tokenizer_path=args.tokenizer_path, device=args.device)
     if args.use_compile == 1:
         model = torch.compile(model)
         Logger('torch.compile enabled')

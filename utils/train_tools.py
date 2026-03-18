@@ -150,7 +150,8 @@ def setup_seed(seed: int):
     torch.backends.cudnn.benchmark = False
 
 def init_model(lm_config, from_weight='pretrain', tokenizer_path='../model_def', save_dir='../out', device='cuda'):
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
+    print(tokenizer_path)
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_path,local_files_only=True)
     model = LlmModel(lm_config)
 
     if from_weight!= 'none':
