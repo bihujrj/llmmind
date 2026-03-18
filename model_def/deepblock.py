@@ -28,7 +28,7 @@ class DeepBlock(nn.Module):
     def forward(self,
                 input,
                 position_embedding,
-                past_kv,
+                past_kv: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
                 use_cache=None,
                 attention_mask=None):
         residual=input
