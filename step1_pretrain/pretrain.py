@@ -125,7 +125,7 @@ def main():
     parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
     parser.add_argument('--data_path', type=str, default='../../../llm_data/pretrain_hq.jsonl', help='数据路径')
     parser.add_argument('--tokenizer_path', type=str, default='../model_ref', help='分词器路径')
-    parser.add_argument('--from_weight', type=str, default='none', help='初始权重路径')
+    parser.add_argument('--from_weight', type=str, default='pretrain', help='初始权重路径')
     parser.add_argument('--from_resume', type=int, default=0, choices=[0,1], help='是否从checkpoint恢复')
     parser.add_argument('--use_wandb', action='store_true', help='是否使用wandb')
     parser.add_argument('--wandb_project', type=str, default='LlmMind-Pretrain', help='wandb项目名')
