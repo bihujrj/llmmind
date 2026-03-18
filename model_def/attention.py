@@ -10,7 +10,7 @@ class Attention(nn.Module):
     def __init__(self, config: LlmConfig):
         super().__init__()
         self.config = config
-        self.head_dim = config.hidden_size // config.num_attention_heads
+        self.head_dim = config.hidden_size // config.num_attention_head
         self.kv_heads = getattr(config, 'kv_heads', 4)  # 允许从配置读取
         self.kv_rep = config.num_attention_heads // self.kv_heads
 
