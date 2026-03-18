@@ -27,7 +27,7 @@ from utils.train_tools import (
 
 warnings.filterwarnings('ignore')
 
-def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start_step=0,llm_config=None):
+def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start_step=0,lm_config=None):
     model.train()
     total_steps = len(loader) + start_step
     start_time = time.time()
@@ -102,7 +102,7 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
 
                 # 保存完整训练状态（用于续训）
                 lm_checkpoint(
-                    llm_config=llm_config,
+                    lm_config=lm_config,
                     model=raw_model,
                     optimizer=optimizer,
                     scaler=scaler,
@@ -146,6 +146,7 @@ def main():
 
     # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl --save_dir ./out
     # CUDA_VISIBLE_DEVICES=2 python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out
+    # nohup env CUDA_VISIBLE_DEVICES=2 python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out > l.log 2>&1 &
 
 
     # ----- 1. 初始化分布式环境 -----
@@ -278,7 +279,7 @@ def main():
             args=args,
             wandb=wandb,
             start_step=skip,
-            llm_config=lm_config
+            lm_config=lm_config
         )
 
         # 每个 epoch 结束后重置 start_step 为 0（下一个 epoch 从头开始）
