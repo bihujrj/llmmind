@@ -71,7 +71,7 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
                     current_aux_loss = float(outputs.aux_loss)
             else:
                 current_aux_loss = 0.0
-            logits_loss = current_loss - aux_loss
+            logits_loss = current_loss - current_aux_loss
             current_lr = optimizer.param_groups[-1]['lr']
             eta_remain = (elapsed / step) * (total_steps - step) / 60  # 剩余分钟
 
@@ -117,7 +117,7 @@ def main():
     parser.add_argument('--save_dir', type=str, default='../out', help='模型保存目录')
     parser.add_argument('--save_weight', default='pretrain', type=str, help='权重前缀')
     parser.add_argument('--epochs', type=int, default=1, help='训练轮数')
-    parser.add_argument('--batch_size', type=int, default=4, help='批次大小')
+    parser.add_argument('--batch_size', type=int, default=2, help='批次大小')
     parser.add_argument('--learning_rate', type=float, default=5e-4, help='学习率')
     parser.add_argument('--device', type=str, default=None, help='设备，若为None则自动选择cuda或cpu')
     parser.add_argument('--dtype', type=str, default='float16', choices=['float16', 'bfloat16'], help='混合精度类型')
