@@ -107,7 +107,7 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
 
 def main():
     parser = argparse.ArgumentParser(description="MiniMind Pretraining (GPU Optimized)")
-    parser.add_argument('--save_dir', type=str, default='../out', help='模型保存目录')
+    parser.add_argument('--save_dir', type=str, default='./out', help='模型保存目录')
     parser.add_argument('--save_weight', default='pretrain', type=str, help='权重前缀')
     parser.add_argument('--epochs', type=int, default=1, help='训练轮数')
     parser.add_argument('--batch_size', type=int, default=4, help='批次大小')
