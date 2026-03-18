@@ -2,4 +2,4 @@ transformers==4.57.1
 torch==2.2.2
 matplotlib
 swanlab
-datasets
+datasets==3.6.0

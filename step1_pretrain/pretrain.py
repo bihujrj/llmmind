@@ -145,7 +145,7 @@ def main():
     args = parser.parse_args()
 
     # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl --save_dir ./out
-    # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out
+    # CUDA_VISIBLE_DEVICES=2 python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out
 
 
     # ----- 1. 初始化分布式环境 -----
