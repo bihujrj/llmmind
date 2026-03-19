@@ -6,7 +6,7 @@ class LlmConfig(PretrainedConfig):
                  # head_dim:int=512,
                  attn_dropout:float=0.0,
                  residual_dropout:float=0.0,
-                 vocab_size:int =1000000,
+                 vocab_size:int =6400,
                  max_position_embeddings:int=32*1024,
                  feedforward_dim: int = None,  # FFN中间层维度，若为None则自动计算
                  # num_att_layer:int=10,

@@ -128,7 +128,7 @@ def main():
     parser.add_argument('--log_interval', type=int, default=100, help='日志间隔')
     parser.add_argument('--save_interval', type=int, default=1000, help='保存间隔')
     parser.add_argument('--hidden_size', type=int, default=512, help='隐藏层维度')
-    parser.add_argument('--num_hidden_layers', type=int, default=8, help='隐藏层数')
+    parser.add_argument('--num_hidden_layers', type=int, default=6, help='隐藏层数')
     parser.add_argument('--max_seq_len', type=int, default=340, help='最大序列长度')
     parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
     parser.add_argument('--data_path', type=str, default='../../../llm_data/pretrain_hq.jsonl', help='数据路径')
@@ -147,6 +147,7 @@ def main():
     # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl --save_dir ./out
     # CUDA_VISIBLE_DEVICES=2 python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out
     # nohup env CUDA_VISIBLE_DEVICES=2 python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out > l.log 2>&1 &
+    # nohup env CUDA_VISIBLE_DEVICES=2,3 torchrun -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out > l.log 2>&1 &
 
 
     # ----- 1. 初始化分布式环境 -----
