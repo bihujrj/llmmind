@@ -114,7 +114,7 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
                 del state_dict
 
 def main():
-    parser = argparse.ArgumentParser(description="MiniMind Pretraining (GPU Optimized)")
+    parser = argparse.ArgumentParser(description="Llmmind Pretraining (GPU Optimized)")
     parser.add_argument('--save_dir', type=str, default='../out', help='模型保存目录')
     parser.add_argument('--save_weight', default='pretrain', type=str, help='权重前缀')
     parser.add_argument('--epochs', type=int, default=1, help='训练轮数')
@@ -128,7 +128,7 @@ def main():
     parser.add_argument('--log_interval', type=int, default=100, help='日志间隔')
     parser.add_argument('--save_interval', type=int, default=1000, help='保存间隔')
     parser.add_argument('--hidden_size', type=int, default=512, help='隐藏层维度')
-    parser.add_argument('--num_hidden_layers', type=int, default=6, help='隐藏层数')
+    #parser.add_argument('--num_hidden_layers', type=int, default=6, help='隐藏层数')
     parser.add_argument('--max_seq_len', type=int, default=340, help='最大序列长度')
     parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
     parser.add_argument('--data_path', type=str, default='../../../llm_data/pretrain_hq.jsonl', help='数据路径')

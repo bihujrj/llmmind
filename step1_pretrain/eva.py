@@ -29,7 +29,7 @@ def init_model(args):
         #     load_lora(model, f'./{args.save_dir}/lora/{args.lora_weight}_{args.hidden_size}.pth')
     else:
         model = AutoModelForCausalLM.from_pretrained(args.load_from, trust_remote_code=True)
-    get_model_params(model, model.config)
+    get_model_params(model, model.conmodefig)
     return model.eval().to(args.device), tokenizer
 
 def test():

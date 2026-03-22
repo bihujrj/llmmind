@@ -14,7 +14,8 @@ class LlmConfig(PretrainedConfig):
                  norm_eps=0.000001,
                  num_deep_layers:int=10,
                  use_moe:bool=False,
-                 feedforward_act:str='silu'
+                 feedforward_act:str='silu',
+                 inference_rope_scaling=False
                  ):
 
         self.hidden_size=hidden_size
@@ -29,6 +30,7 @@ class LlmConfig(PretrainedConfig):
         self.feedforward_dim=feedforward_dim
         self.feedforward_act=feedforward_act
         self.use_moe=use_moe
+        self.inference_rope_scaling=inference_rope_scaling
         # self.head_dim=head_dim
 
 
