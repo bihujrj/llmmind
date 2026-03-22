@@ -2,14 +2,14 @@ import math
 from typing import Tuple, Optional, List, Union
 import torch
 from torch import nn
-from transformers import PretrainedConfig
+from transformers import PretrainedConfig, PreTrainedModel, GenerationMixin
 from transformers.modeling_outputs import CausalLMOutputWithPast
 
 from model_def.llmconfig import LlmConfig
 from model_def.deepblock import DeepBlock
 from model_def.pe import Rope
 import torch.nn.functional as F
-class LlmModel(nn.Module):
+class LlmModel(nn.Module,PreTrainedModel, GenerationMixin):
     def __init__(self,
                  config:LlmConfig):
         super().__init__()
