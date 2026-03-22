@@ -5,7 +5,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, TextStreamer
 
 from model_def.llmconfig import LlmConfig
-from model_def.llmmodel import LlmModel
+from model_def.llmmodel import LlmModel, LlmForCausalLM
 from utils.train_tools import setup_seed
 
 
@@ -13,7 +13,7 @@ def ini_model(args):
     # tokenizer=AutoTokenizer(args.token_path)
     tokenizer=AutoTokenizer.from_pretrained(args.token_path,local_files_only=True)
     # model=AutoModelForCausalLM.from_pretrained(args.pretrain_path,trust_remote_code=True)
-    model = LlmModel(LlmConfig(
+    model = LlmForCausalLM(LlmConfig(
         hidden_size=args.hidden_size,
         num_deep_layers=args.num_deep_layers,
         use_moe=bool(args.use_moe),

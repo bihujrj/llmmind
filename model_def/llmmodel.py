@@ -9,7 +9,7 @@ from model_def.llmconfig import LlmConfig
 from model_def.deepblock import DeepBlock
 from model_def.pe import Rope
 import torch.nn.functional as F
-class LlmModel(PreTrainedModel, GenerationMixin):
+class LlmModel(nn.Module):
     def __init__(self,
                  config:LlmConfig):
         super().__init__()
@@ -108,9 +108,9 @@ class LlmForCausalLM(PreTrainedModel, GenerationMixin):
         self.config = config or LlmConfig()
         super().__init__(self.config)
         self.model = LlmModel(self.config)
-        self.lm_head = nn.Linear(self.config.hidden_size, self.config.vocab_size, bias=False)
-        # 权重绑定：嵌入层和输出层共享权重
-        self.model.embed_tokens.weight = self.lm_head.weight
+        # self.lm_head = nn.Linear(self.config.hidden_size, self.config.vocab_size, bias=False)
+        # # 权重绑定：嵌入层和输出层共享权重
+        # self.model.embed_tokens.weight = self.lm_head.weight
 
     def forward(self,
                 input_ids: Optional[torch.Tensor] = None,
@@ -120,38 +120,45 @@ class LlmForCausalLM(PreTrainedModel, GenerationMixin):
                 use_cache: bool = False,
                 logits_to_keep: Union[int, torch.Tensor] = 0,
                 **args):
-        # 调用骨干模型
-        hidden_states, past_key_values, aux_loss = self.model(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            past_key_values=past_key_values,
-            use_cache=use_cache,
-            **args
-        )
-
-        # 决定保留哪些位置的logits（用于生成时减少计算）
-        if isinstance(logits_to_keep, int):
-            slice_indices = slice(-logits_to_keep, None) if logits_to_keep > 0 else slice(None)
-        else:
-            slice_indices = logits_to_keep
-        logits = self.lm_head(hidden_states[:, slice_indices, :])
-
-        loss = None
-        if labels is not None:
-            # 计算交叉熵损失，忽略-100的位置
-            shift_logits = logits[..., :-1, :].contiguous()
-            shift_labels = labels[..., 1:].contiguous()
-            loss = F.cross_entropy(shift_logits.view(-1, shift_logits.size(-1)),
-                                    shift_labels.view(-1),
-                                    ignore_index=-100)
-
-        output = CausalLMOutputWithPast(
-            loss=loss,
-            logits=logits,
-            past_key_values=past_key_values,
-            hidden_states=hidden_states
-        )
-        # 附加MoE的辅助损失（可以用于日志或梯度）
-        output.aux_loss = aux_loss
+        # # 调用骨干模型
+        # hidden_states, past_key_values, aux_loss = self.model(
+        #     input_ids=input_ids,
+        #     attention_mask=attention_mask,
+        #     past_key_values=past_key_values,
+        #     use_cache=use_cache,
+        #     **args
+        # )
+        #
+        # # 决定保留哪些位置的logits（用于生成时减少计算）
+        # if isinstance(logits_to_keep, int):
+        #     slice_indices = slice(-logits_to_keep, None) if logits_to_keep > 0 else slice(None)
+        # else:
+        #     slice_indices = logits_to_keep
+        # logits = self.lm_head(hidden_states[:, slice_indices, :])
+        #
+        # loss = None
+        # if labels is not None:
+        #     # 计算交叉熵损失，忽略-100的位置
+        #     shift_logits = logits[..., :-1, :].contiguous()
+        #     shift_labels = labels[..., 1:].contiguous()
+        #     loss = F.cross_entropy(shift_logits.view(-1, shift_logits.size(-1)),
+        #                             shift_labels.view(-1),
+        #                             ignore_index=-100)
+        #
+        # output = CausalLMOutputWithPast(
+        #     loss=loss,
+        #     logits=logits,
+        #     past_key_values=past_key_values,
+        #     hidden_states=hidden_states
+        # )
+        # # 附加MoE的辅助损失（可以用于日志或梯度）
+        # output.aux_loss = aux_loss
+        # return output
+        output=self.model.forward(input_ids,
+                attention_mask,
+                labels,
+            past_key_values,
+                use_cache,
+                logits_to_keep)
         return output
 
