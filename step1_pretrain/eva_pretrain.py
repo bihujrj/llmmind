@@ -59,7 +59,7 @@ def main():
         )
         r1=generated_ids[0]
         index=len(inputs["input_ids"][0])
-        response=tokenizer.decode(generated_ids[0][index:],skip_special_tokens=True )
+        response=tokenizer.decode(r1[index:],skip_special_tokens=True )
         conversation.append({"role": "assistant", "content": response})
         gen_tokens = len(generated_ids[0]) - len(inputs["input_ids"][0])
         print(f'\n[Speed]: {gen_tokens / (time.time() - st):.2f} tokens/s\n\n') if args.show_speed else print('\n\n')
