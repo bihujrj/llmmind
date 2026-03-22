@@ -32,6 +32,9 @@ def init_model(args):
     get_model_params(model, model.config)
     return model.eval().to(args.device), tokenizer
 
+def test():
+    print('111')
+
 
 def main():
     parser = argparse.ArgumentParser(description="MiniMind模型推理与对话")
