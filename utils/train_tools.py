@@ -208,7 +208,7 @@ class SkipBatchSampler(Sampler):
 
 
 
-def read_wandb_config(config_rel_path="llm_data/config.txt", levels_up=3):
+def read_wandb_config(config_rel_path="llm_data/config.txt", levels_up=2):
     """
     从当前文件所在目录向上 levels_up 级目录下的 config_rel_path 文件中读取 wandb 配置。
     返回一个字典，包含所有以 'wandb_' 开头的键值对（键名转换为小写）。
