@@ -1,5 +1,6 @@
 from transformers import PretrainedConfig
 class LlmConfig(PretrainedConfig):
+    model_type = "llm"  # Set a model type
     def __init__(self,
                  hidden_size=512,
                  num_attention_head:int=8,
@@ -15,9 +16,10 @@ class LlmConfig(PretrainedConfig):
                  num_deep_layers:int=10,
                  use_moe:bool=False,
                  feedforward_act:str='silu',
-                 inference_rope_scaling=False
+                 inference_rope_scaling=False,
+                         **kwargs
                  ):
-
+        super().__init__(**kwargs)
         self.hidden_size=hidden_size
         self.num_attention_head=num_attention_head
         self.attn_dropout=attn_dropout

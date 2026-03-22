@@ -4,9 +4,8 @@
     <list default="true" id="41943285-3958-4300-90ee-ccda86d8acb2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/model_def/llmconfig.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_def/llmconfig.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/step1_pretrain/eva.py" beforeDir="false" afterPath="$PROJECT_DIR$/step1_pretrain/eva.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model_def/llmmodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/model_def/llmmodel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/step1_pretrain/eva_pretrain.py" beforeDir="false" afterPath="$PROJECT_DIR$/step1_pretrain/eva_pretrain.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/step1_pretrain/pretrain.py" beforeDir="false" afterPath="$PROJECT_DIR$/step1_pretrain/pretrain.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,38 +135,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/step1_pretrain/eva_pretrain.py</url>
-          <line>95</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/step1_pretrain/eva_pretrain.py</url>
-          <line>39</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/step1_pretrain/eva_pretrain.py</url>
-          <line>24</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/step1_pretrain/eva_pretrain.py</url>
-          <line>28</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/step1_pretrain/eva_pretrain.py</url>
-          <line>31</line>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/step1_pretrain/eva_pretrain.py</url>
-          <line>34</line>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/step1_pretrain/eva_pretrain.py</url>
-          <line>38</line>
-          <option name="timeStamp" value="15" />
+          <line>36</line>
+          <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -106,11 +106,13 @@ class LlmForCausalLM(PreTrainedModel, GenerationMixin):
 
     def __init__(self, config: LlmConfig = None):
         self.config = config or LlmConfig()
-        super().__init__(self.config)
+        super().__init__(config)
+        #self.config = config or LlmConfig()
         self.model = LlmModel(self.config)
         # self.lm_head = nn.Linear(self.config.hidden_size, self.config.vocab_size, bias=False)
         # # 权重绑定：嵌入层和输出层共享权重
         # self.model.embed_tokens.weight = self.lm_head.weight
+        self.post_init()
 
     def forward(self,
                 input_ids: Optional[torch.Tensor] = None,
