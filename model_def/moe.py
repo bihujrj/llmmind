@@ -42,14 +42,19 @@ class MoeGate(nn.Module):
             scores_moe=scores
             topk_idx_moe=topk_idx.view(bsize,-1)#[4,1020]
             if self.seq_moe_loss:#按字符计算损失
-                score_seq_moe=scores_moe.view(bsize,data_len,-1)#[4,340,7]
-                ce=torch.zeros(bsize,self.n_experts,device=x.device)#[4,7]
-                #给不同expert计数
+                # score_seq_moe=scores_moe.view(bsize,data_len,-1)#[4,340,7]
+                # ce=torch.zeros(bsize,self.n_experts,device=x.device)#[4,7]
+                # #给不同expert计数
+                #
+                # #ce.scatter_add_(1,score_seq_moe,torch.ones(bsize,data_len*self.top_k,device=x.device)).div_(data_len*self.top_k/self.n_experts)
+                # # ce.scatter_add_(1, topk_idx_moe, torch.ones_like(topk_idx_moe, dtype=torch.float)).div_(
+                # #     data_len * self.top_k / self.n_experts)
+                # # moe_loss=(ce*score_seq_moe(dim=-1).sum(1).mean()*self.alpha)
+                # # topk indices: (bsize, data_len*top_k)
+                # topk_idx = topk_idx.view(bsize, -1)
 
-                #ce.scatter_add_(1,score_seq_moe,torch.ones(bsize,data_len*self.top_k,device=x.device)).div_(data_len*self.top_k/self.n_experts)
-                # ce.scatter_add_(1, topk_idx_moe, torch.ones_like(topk_idx_moe, dtype=torch.float)).div_(
-                #     data_len * self.top_k / self.n_experts)
-                # moe_loss=(ce*score_seq_moe(dim=-1).sum(1).mean()*self.alpha)
+                # scores: (bsize, data_len, n_experts)
+                scores = scores_moe.view(bsize, data_len, -1)
                 # topk indices: (bsize, data_len*top_k)
                 topk_idx = topk_idx.view(bsize, -1)
 
