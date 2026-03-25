@@ -155,6 +155,12 @@ def main():
     parser.add_argument('--seq_moe_loss', type=bool, default=0.5, help='是否在序列级别计算moe均衡损失')
 
 
+    args = parser.parse_args()
+    lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_deep_layers,
+                          use_moe=bool(args.use_moe),n_experts=args.n_experts,
+                          num_experts_topk=args.num_experts_topk,moegate_loss_alpha=bool(args.moegate_loss_alpha),
+                          n_share_experts=args.n_share_experts,seq_moe_loss=args.seq_moe_loss,
+                          )
     #seq_moe_loss
 
 
@@ -163,7 +169,7 @@ def main():
 
 
 
-    args = parser.parse_args()
+
 
     # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl --save_dir ../out
     # CUDA_VISIBLE_DEVICES=2 python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out
@@ -206,8 +212,7 @@ def main():
     # )
     # lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_hidden_layers,
     #                       use_moe=bool(args.use_moe))
-    lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_deep_layers,
-                          use_moe=bool(args.use_moe))
+
 
     # ----- 5. 加载模型和分词器 -----
     model, tokenizer = init_model(
