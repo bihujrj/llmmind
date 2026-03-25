@@ -54,23 +54,23 @@ class MoeGate(nn.Module):
                 # topk_idx = topk_idx.view(bsize, -1)
 
                 # scores: (bsize, data_len, n_experts)
-                scores = scores_moe.view(bsize, data_len, -1)
+                scores = scores_moe.view(bsize, data_len, -1)#[4,340,7]
                 # topk indices: (bsize, data_len*top_k)
-                topk_idx = topk_idx.view(bsize, -1)
+                topk_idx = topk_idx.view(bsize, -1) #[4,1020] 1020个变量在0-6之间
 
                 # Count how many times each expert is selected (per batch)
-                counts = torch.zeros(bsize, self.n_experts, device=x.device)
-                counts.scatter_add_(1, topk_idx, torch.ones_like(topk_idx, dtype=torch.float))
+                counts = torch.zeros(bsize, self.n_experts, device=x.device)#[4,7]
+                counts.scatter_add_(1, topk_idx, torch.ones_like(topk_idx, dtype=torch.float)) #[4,7]
 
                 # Normalize counts: sum over experts = n_experts per batch
-                total_tokens = data_len * self.top_k
-                fi = counts * (self.n_experts / total_tokens)  # shape (bsize, n_experts)
+                total_tokens = data_len * self.top_k #430*3=1020
+                fi = counts * (self.n_experts / total_tokens)  # shape (bsize, n_experts)  [4,7]    选中长度/数据长度
 
                 # Average score per expert per batch
-                pi = scores.mean(dim=1)  # (bsize, n_experts)
+                pi = scores.mean(dim=1)  # (bsize, n_experts)[4,7]
 
                 # Load‑balancing loss: average over batches
-                moe_loss = (pi * fi).sum(dim=1).mean() * self.alpha
+                moe_loss = (pi * fi).sum(dim=1).mean() * self.alpha#pi点积fi变成标量
             else:
                 # mask_ce=F.one_hot(topk_idx_moe.view(-1),num_classes=self.n_experts)
                 # ce=mask_ce.float().mean(0)
@@ -118,15 +118,27 @@ class MoeFeedForward(nn.Module):
             #x = torch.randn(4, 512)          # 4 个 token, hidden=512
             #k = 2
             #x = x.repeat_interleave(k, dim=0) # 形状 [8, 512]
-            x_repeated=x.repeat_interleave(self.config.num_experts_topk,dim=0)
-            y=torch.empty_like(x,dtype=x.dtype)
+            # x_repeated=x.repeat_interleave(self.config.num_experts_topk,dim=0)
+            # y=torch.empty_like(x,dtype=x.dtype)
+            N = x.shape[0]  # total tokens = batch_size * seq_len
+            top_k = self.config.num_experts_topk
+            y = torch.zeros(N, top_k, x.shape[-1], dtype=x.dtype, device=x.device)
+            x_repeated = x.repeat_interleave(top_k, dim=0)
+            flat_topk_idx = topk_idx.view(-1)
             # 对每个专家，处理分配给它的token
             for i,expert in enumerate(self.experts):
                 # 找到当前专家处理的token索引
                 mask = (flat_topk_idx == i)
+                # if mask.any():
+                #     expert_out = expert(x_repeated[mask])
+                #     y[mask] = expert_out.to(y.dtype)
                 if mask.any():
+                    pos = mask.nonzero(as_tuple=True)[0]  # indices in the flattened list
+                    token_idx = pos // self.config.num_experts_topk  # which original token
+                    slot_idx = pos % self.config.num_experts_topk   # which top‑k slot
                     expert_out = expert(x_repeated[mask])
-                    y[mask] = expert_out.to(y.dtype)
+                    # Assign the output to the correct (token, slot) position
+                    y[token_idx, slot_idx] = expert_out
                 # 如果没有token分配给该专家，y中对应位置保持不变（但后续会乘以权重）
                 # 注意：对于没有token的专家，y中对应位置可能还是未初始化的，但乘以权重后可能被忽略？
                 # 这里为了避免未初始化问题，可以加一个小的常数项，但代码中加了0*sum(p)来确保梯度计算？
@@ -142,9 +154,12 @@ class MoeFeedForward(nn.Module):
                 # 但后续会被乘以权重，而权重可能为0？但topk_weight中对应位置是存在的，所以这里需要初始化y为0。
                 # 代码中y是用torch.empty_like创建的，所以未初始化的部分可能是任意值，这可能导致问题。
                 # 可能需要在循环前将y初始化为0，但代码中没有。这里按照原始代码不做修改，但指出潜在风险。
-            y = y.view(*topk_weight.shape, -1)  # [bsz*seq_len, top_k, hidden]
-            y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # 加权求和
-            y = y.view(*org_shape)
+            # y = y.view(*topk_weight.shape, -1)  # [bsz*seq_len, top_k, hidden]
+            # y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # 加权求和
+            # y = y.view(*org_shape)
+            # Apply weights and sum over slots
+            y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # -> (N, hidden)
+            y = y.view(*org_shape)  # -> (batch, seq, hidden)
         else:
             # 推理时，使用优化的moe_infer方法避免重复计算
             y = self.moe_infer(x, flat_topk_idx, topk_weight.view(-1, 1)).view(*org_shape)
