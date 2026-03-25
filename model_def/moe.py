@@ -25,10 +25,10 @@ class MoeGate(nn.Module):
         init.kaiming_uniform_(self.weight,a=math.sqrt(5))
 
     def forward(self,x):
-        bsize,data_len,hdim=x.shape
-        x=x.view(-1,hdim)
+        bsize,data_len,hdim=x.shape #[4,340,64]
+        x=x.view(-1,hdim) #[1360,64]
 
-        logits=F.linear(x,self.weight,None)
+        logits=F.linear(x,self.weight,None)#[1360,7]
         scores=logits.softmax(dim=-1)
 
         #取最相关expert
@@ -36,15 +36,16 @@ class MoeGate(nn.Module):
 
         #归一化
         denominaotr=topk_weight.sum(dim=-1,keepdim=True)+1e-20
-        topk_weight=topk_weight/denominaotr
+        topk_weight=topk_weight/denominaotr #[1360,3]
 
         if self.training and self.alpha>0:
             scores_moe=scores
-            topk_idx_moe=topk_idx.view(bsize,-1)
-            if self.seq_moe_loss:
-                score_seq_moe=scores_moe.view(bsize,data_len,-1)
-                ce=torch.zeros(bsize,self.n_experts,device=x.device)
+            topk_idx_moe=topk_idx.view(bsize,-1)#[4,1020]
+            if self.seq_moe_loss:#按字符计算损失
+                score_seq_moe=scores_moe.view(bsize,data_len,-1)#[4,340,7]
+                ce=torch.zeros(bsize,self.n_experts,device=x.device)#[4,7]
                 #给不同expert计数
+
                 ce.scatter_add_(1,score_seq_moe,torch.ones(bsize,data_len*self.top_k,device=x.device)).div_(data_len*self.top_k/self.n_experts)
                 moe_loss=(ce*score_seq_moe(dim=-1).sum(1).mean()*self.alpha)
             else:
