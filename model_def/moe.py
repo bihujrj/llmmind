@@ -41,7 +41,7 @@ class MoeGate(nn.Module):
         if self.training and self.alpha>0:
             scores_moe=scores
             topk_idx_moe=topk_idx.view(bsize,-1)
-            if self.seq_aux:
+            if self.seq_moe_loss:
                 score_seq_moe=scores_moe.view(bsize,data_len,-1)
                 ce=torch.zeros(bsize,self.n_experts,device=x.device)
                 #给不同expert计数
