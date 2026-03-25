@@ -127,10 +127,9 @@ def main():
     parser.add_argument('--grad_clip', type=float, default=1.0, help='梯度裁剪阈值')
     parser.add_argument('--log_interval', type=int, default=100, help='日志间隔')
     parser.add_argument('--save_interval', type=int, default=1000, help='保存间隔')
-    parser.add_argument('--hidden_size', type=int, default=512, help='隐藏层维度')
+    parser.add_argument('--hidden_size', type=int, default=128, help='隐藏层维度')
     #parser.add_argument('--num_hidden_layers', type=int, default=6, help='隐藏层数')
     parser.add_argument('--max_seq_len', type=int, default=340, help='最大序列长度')
-    parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
     parser.add_argument('--data_path', type=str, default='../../../llm_data/pretrain_hq.jsonl', help='数据路径')
     parser.add_argument('--tokenizer_path', type=str, default='../model_def', help='分词器路径')
     parser.add_argument('--from_weight', type=str, default='pretrain', help='初始权重路径')
@@ -142,12 +141,28 @@ def main():
     parser.add_argument('--force_gpu', action='store_true', help='如果没有GPU则报错')
     parser.add_argument('--use_amp', type=bool, default=False, help='混合精度')
 
+    parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
+    parser.add_argument('--num_experts_topk', type=int, default=4, help='num_experts_topk')
+    parser.add_argument('--n_experts', type=int, default=2, help='n_experts')
+    parser.add_argument('--n_share_experts', type=int, default=0, help='n_share_experts')
+    parser.add_argument('--moegate_loss_alpha', type=float, default=0.5, help='moe均衡损失系数')
+    parser.add_argument('--seq_moe_loss', type=bool, default=0.5, help='是否在序列级别计算moe均衡损失')
+
+
+    #seq_moe_loss
+
+
+
+
+
+
+
     args = parser.parse_args()
 
-    # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl --save_dir ./out
+    # python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../../llm_data/pretrain_hq.jsonl --save_dir ../out
     # CUDA_VISIBLE_DEVICES=2 python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out
     # nohup env CUDA_VISIBLE_DEVICES=2 python -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out > l.log 2>&1 &
-    # nohup env CUDA_VISIBLE_DEVICES=2,3 torchrun -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ./out > l.log 2>&1 &
+    # nohup env CUDA_VISIBLE_DEVICES=2,3 torchrun -m step1_pretrain.pretrain --tokenizer_path ./model_def --data_path ../llm_data/pretrain_hq.jsonl --save_dir ../out > l.log 2>&1 &
 
 
     # ----- 1. 初始化分布式环境 -----

@@ -114,6 +114,7 @@ def main():
                         help="权重名称前缀（pretrain, full_sft, rlhf, reason, ppo_actor, grpo, spo）")
     parser.add_argument('--device', default='cuda' if torch.cuda.is_available() else 'cpu', type=str, help="运行设备")
     parser.add_argument('--show_speed', default=True, action='store_true', help="显示生成速度")
+    parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
     args = parser.parse_args()
 
     model, tokenizer = ini_model(args)

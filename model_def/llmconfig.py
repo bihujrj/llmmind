@@ -13,10 +13,15 @@ class LlmConfig(PretrainedConfig):
                  # num_att_layer:int=10,
                  dropout:float=0.0001,
                  norm_eps=0.000001,
-                 num_deep_layers:int=10,
+                 num_deep_layers:int=6,
                  use_moe:bool=False,
                  feedforward_act:str='silu',
                  inference_rope_scaling=False,
+                 num_experts_topk=8,
+                 n_experts=2,
+                 n_share_experts=0,
+                 moegate_loss_alpha=0.5,
+                 seq_moe_loss=False,
                          **kwargs
                  ):
         super().__init__(**kwargs)
@@ -33,7 +38,16 @@ class LlmConfig(PretrainedConfig):
         self.feedforward_act=feedforward_act
         self.use_moe=use_moe
         self.inference_rope_scaling=inference_rope_scaling
-        # self.head_dim=head_dim
+        self.num_experts_topk=num_experts_topk
+        self.n_experts=n_experts
+        self.n_share_experts=n_share_experts
+        self.moegate_loss_alpha=moegate_loss_alpha
+        self.self.seq_moe_loss=seq_moe_loss
+
+
+
+
+
 
 
 

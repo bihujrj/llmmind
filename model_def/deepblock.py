@@ -6,6 +6,7 @@ from transformers import PretrainedConfig
 from model_def.llmconfig import LlmConfig
 from model_def.attention import Attention
 from model_def.feedforward import FeedForward
+from model_def.moe import MoeFeedForward
 from model_def.pe import Rope
 import torch.nn.functional as F
 
@@ -22,7 +23,7 @@ class DeepBlock(nn.Module):
         self.layer_id=layer_id
         self.input_norm=RMSNorm(config.hidden_size,eps=config.norm_eps)
         self.post_norm=RMSNorm(config.hidden_size,eps=config.norm_eps)
-        self.feedforward=FeedForward(config)
+        self.feedforward=FeedForward(config) if not config.use_moe else MoeFeedForward(config)
         if torch.cuda.is_available():
             self.cuda()
     def forward(self,
