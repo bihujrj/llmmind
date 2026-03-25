@@ -31,7 +31,7 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
     model.train()
     total_steps = len(loader) + start_step
     start_time = time.time()
-    print("start_time: "+start_time)
+    print("start_time: "+str(start_time))
     for step, (input_ids, labels) in enumerate(loader, start=start_step + 1):
         # 将数据移到 GPU（如果可用）
         input_ids = input_ids.to(args.device, non_blocking=True)
@@ -113,8 +113,8 @@ def train_epoch(epoch, model, loader, optimizer, scaler, args, wandb=None, start
                 )
                 del state_dict
     Finish_time = time.time()
-    print("Finish_time: "+Finish_time)
-    print("Finish_time-start_time: "+(Finish_time-start_time))
+    print("Finish_time: "+str(Finish_time))
+    print("Finish_time-start_time: "+str(Finish_time-start_time))
 
 def main():
     parser = argparse.ArgumentParser(description="Llmmind Pretraining (GPU Optimized)")

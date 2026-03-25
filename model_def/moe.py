@@ -19,7 +19,7 @@ class MoeGate(nn.Module):
         self.n_experts=config.n_experts
 
         self.alpha=config.moegate_loss_alpha
-        self.seq_aux=config.seq_aux
+        self.seq_moe_loss=config.seq_moe_loss
 
         self.weight=nn.Parameter(torch.empty(self.n_experts,config.hidden_size))
         init.kaiming_uniform_(self.weight,a=math.sqrt(5))

@@ -38,6 +38,7 @@ class LlmConfig(PretrainedConfig):
         self.feedforward_act=feedforward_act
         self.use_moe=use_moe
         self.inference_rope_scaling=inference_rope_scaling
+
         self.num_experts_topk=num_experts_topk
         self.n_experts=n_experts
         self.n_share_experts=n_share_experts
