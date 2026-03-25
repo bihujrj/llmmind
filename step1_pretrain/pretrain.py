@@ -118,7 +118,7 @@ def main():
     parser.add_argument('--save_dir', type=str, default='../out', help='模型保存目录')
     parser.add_argument('--save_weight', default='pretrain', type=str, help='权重前缀')
     parser.add_argument('--epochs', type=int, default=1, help='训练轮数')
-    parser.add_argument('--batch_size', type=int, default=1, help='批次大小')
+    parser.add_argument('--batch_size', type=int, default=4, help='批次大小')
     parser.add_argument('--learning_rate', type=float, default=5e-4, help='学习率')
     parser.add_argument('--device', type=str, default=None, help='设备，若为None则自动选择cuda或cpu')
     parser.add_argument('--dtype', type=str, default='float16', choices=['float16', 'bfloat16'], help='混合精度类型')
