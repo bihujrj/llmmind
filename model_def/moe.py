@@ -60,7 +60,7 @@ class MoeGate(nn.Module):
 
 class MoeFeedForward(nn.Module):
     def __init__(self,config:LlmConfig):
-        super.__init__()
+        super().__init__()
         self.config=config
         self.experts=nn.ModuleList([
             FeedForward(config) for _ in range(config.n_experts)
