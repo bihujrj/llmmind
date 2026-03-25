@@ -147,7 +147,7 @@ def main():
     parser.add_argument('--num_deep_layers', type=int, default=6, help='注意力层数')
 
 
-    parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
+    parser.add_argument('--use_moe', type=int, default=1, choices=[0,1], help='是否使用MoE')
     parser.add_argument('--num_experts_topk', type=int, default=4, help='num_experts_topk')
     parser.add_argument('--n_experts', type=int, default=2, help='n_experts')
     parser.add_argument('--n_share_experts', type=int, default=0, help='n_share_experts')
