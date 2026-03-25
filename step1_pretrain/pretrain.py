@@ -141,6 +141,9 @@ def main():
     parser.add_argument('--force_gpu', action='store_true', help='如果没有GPU则报错')
     parser.add_argument('--use_amp', type=bool, default=False, help='混合精度')
 
+    parser.add_argument('--num_deep_layers', type=int, default=6, help='注意力层数')
+
+
     parser.add_argument('--use_moe', type=int, default=0, choices=[0,1], help='是否使用MoE')
     parser.add_argument('--num_experts_topk', type=int, default=4, help='num_experts_topk')
     parser.add_argument('--n_experts', type=int, default=2, help='n_experts')
@@ -200,7 +203,7 @@ def main():
     # )
     # lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_hidden_layers,
     #                       use_moe=bool(args.use_moe))
-    lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_hidden_layers,
+    lm_config = LlmConfig(hidden_size=args.hidden_size, num_deep_layers=args.num_deep_layers,
                           use_moe=bool(args.use_moe))
 
     # ----- 5. 加载模型和分词器 -----
