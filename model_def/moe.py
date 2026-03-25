@@ -46,14 +46,38 @@ class MoeGate(nn.Module):
                 ce=torch.zeros(bsize,self.n_experts,device=x.device)#[4,7]
                 #给不同expert计数
 
-                ce.scatter_add_(1,score_seq_moe,torch.ones(bsize,data_len*self.top_k,device=x.device)).div_(data_len*self.top_k/self.n_experts)
-                moe_loss=(ce*score_seq_moe(dim=-1).sum(1).mean()*self.alpha)
+                #ce.scatter_add_(1,score_seq_moe,torch.ones(bsize,data_len*self.top_k,device=x.device)).div_(data_len*self.top_k/self.n_experts)
+                # ce.scatter_add_(1, topk_idx_moe, torch.ones_like(topk_idx_moe, dtype=torch.float)).div_(
+                #     data_len * self.top_k / self.n_experts)
+                # moe_loss=(ce*score_seq_moe(dim=-1).sum(1).mean()*self.alpha)
+                # topk indices: (bsize, data_len*top_k)
+                topk_idx = topk_idx.view(bsize, -1)
+
+                # Count how many times each expert is selected (per batch)
+                counts = torch.zeros(bsize, self.n_experts, device=x.device)
+                counts.scatter_add_(1, topk_idx, torch.ones_like(topk_idx, dtype=torch.float))
+
+                # Normalize counts: sum over experts = n_experts per batch
+                total_tokens = data_len * self.top_k
+                fi = counts * (self.n_experts / total_tokens)  # shape (bsize, n_experts)
+
+                # Average score per expert per batch
+                pi = scores.mean(dim=1)  # (bsize, n_experts)
+
+                # Load‑balancing loss: average over batches
+                moe_loss = (pi * fi).sum(dim=1).mean() * self.alpha
             else:
-                mask_ce=F.one_hot(topk_idx_moe.view(-1),num_classes=self.n_experts)
-                ce=mask_ce.float().mean(0)
-                pi=scores_moe.mean(0)
-                fi=ce*self.n_experts
-                moe_loss=(pi*fi).sum()*self.alpha
+                # mask_ce=F.one_hot(topk_idx_moe.view(-1),num_classes=self.n_experts)
+                # ce=mask_ce.float().mean(0)
+                # pi=scores_moe.mean(0)
+                # fi=ce*self.n_experts
+                # moe_loss=(pi*fi).sum()*self.alpha
+                # original non‑seq branch
+                mask_ce = F.one_hot(topk_idx_moe.view(-1), num_classes=self.n_experts)
+                ce = mask_ce.float().mean(0)  # fraction per expert
+                pi = scores_moe.mean(0)  # average score per expert
+                fi = ce * self.n_experts  # scale to sum = n_experts
+                moe_loss = (pi * fi).sum() * self.alpha
         else:
             moe_loss=scores.new_zeros(1).squeeze()
         return topk_idx,topk_weight,moe_loss
