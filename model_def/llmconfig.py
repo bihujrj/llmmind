@@ -42,7 +42,7 @@ class LlmConfig(PretrainedConfig):
         self.n_experts=n_experts
         self.n_share_experts=n_share_experts
         self.moegate_loss_alpha=moegate_loss_alpha
-        self.self.seq_moe_loss=seq_moe_loss
+        self.seq_moe_loss=seq_moe_loss
 
 
 
