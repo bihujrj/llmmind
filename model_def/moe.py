@@ -110,8 +110,8 @@ class MoeFeedForward(nn.Module):
         #使得每个 token 独立成为一个样本，方便后续的线性层、门控网络或专家网络进行逐 token 处理。
         #x = torch.randn(2, 3, 512)  # (batch=2, seq=3, hidden=512)
         #x = x.view(-1, x.shape[-1]) # 形状变为 (6, 512)
-        x=x.view(-1,x.shape[-1])
-        flat_topk_idx=topk_idx.view(-1)
+        x=x.view(-1,x.shape[-1])#[1360,64]
+        flat_topk_idx=topk_idx.view(-1)#[4080]
         if self.training:
             # 训练时：由于每个token可能被多个专家处理，需要复制输入
             # 将x重复top_k次，以便每个专家副本独立计算
@@ -120,23 +120,23 @@ class MoeFeedForward(nn.Module):
             #x = x.repeat_interleave(k, dim=0) # 形状 [8, 512]
             # x_repeated=x.repeat_interleave(self.config.num_experts_topk,dim=0)
             # y=torch.empty_like(x,dtype=x.dtype)
-            N = x.shape[0]  # total tokens = batch_size * seq_len
+            N = x.shape[0]  # total tokens = batch_size * seq_len 1360
             top_k = self.config.num_experts_topk
-            y = torch.zeros(N, top_k, x.shape[-1], dtype=x.dtype, device=x.device)
-            x_repeated = x.repeat_interleave(top_k, dim=0)
-            flat_topk_idx = topk_idx.view(-1)
+            y = torch.zeros(N, top_k, x.shape[-1], dtype=x.dtype, device=x.device)#[1360,3,4]
+            x_repeated = x.repeat_interleave(top_k, dim=0)#[4080,64]
+            flat_topk_idx = topk_idx.view(-1)#[4080]
             # 对每个专家，处理分配给它的token
             for i,expert in enumerate(self.experts):
                 # 找到当前专家处理的token索引
-                mask = (flat_topk_idx == i)
+                mask = (flat_topk_idx == i)#[4080]
                 # if mask.any():
                 #     expert_out = expert(x_repeated[mask])
                 #     y[mask] = expert_out.to(y.dtype)
                 if mask.any():
-                    pos = mask.nonzero(as_tuple=True)[0]  # indices in the flattened list
-                    token_idx = pos // self.config.num_experts_topk  # which original token
-                    slot_idx = pos % self.config.num_experts_topk   # which top‑k slot
-                    expert_out = expert(x_repeated[mask])
+                    pos = mask.nonzero(as_tuple=True)[0]  # indices in the flattened list [657]
+                    token_idx = pos // self.config.num_experts_topk  # which original token [657]
+                    slot_idx = pos % self.config.num_experts_topk   # which top‑k slot[657]
+                    expert_out = expert(x_repeated[mask])#[657,64]
                     # Assign the output to the correct (token, slot) position
                     y[token_idx, slot_idx] = expert_out
                 # 如果没有token分配给该专家，y中对应位置保持不变（但后续会乘以权重）
@@ -158,14 +158,14 @@ class MoeFeedForward(nn.Module):
             # y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # 加权求和
             # y = y.view(*org_shape)
             # Apply weights and sum over slots
-            y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # -> (N, hidden)
+            y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # -> (N, hidden) [1360,64]
             y = y.view(*org_shape)  # -> (batch, seq, hidden)
         else:
             # 推理时，使用优化的moe_infer方法避免重复计算
             y = self.moe_infer(x, flat_topk_idx, topk_weight.view(-1, 1)).view(*org_shape)
         # 添加共享专家的输出
-        if self.config.n_shared_experts > 0:
-            for expert in self.shared_experts:
+        if self.config.n_share_experts > 0:
+            for expert in self.share_experts:
                 y = y + expert(x_bak)
         return y
 
