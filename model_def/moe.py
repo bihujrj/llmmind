@@ -122,7 +122,7 @@ class MoeFeedForward(nn.Module):
             # y=torch.empty_like(x,dtype=x.dtype)
             N = x.shape[0]  # total tokens = batch_size * seq_len 1360
             top_k = self.config.num_experts_topk
-            y = torch.zeros(N, top_k, x.shape[-1], dtype=x.dtype, device=x.device)#[1360,3,4]
+            y = torch.zeros(N, top_k, x.shape[-1], dtype=x.dtype, device=x.device)#[1360,3,64]
             x_repeated = x.repeat_interleave(top_k, dim=0)#[4080,64]
             flat_topk_idx = topk_idx.view(-1)#[4080]
             # 对每个专家，处理分配给它的token
@@ -158,8 +158,8 @@ class MoeFeedForward(nn.Module):
             # y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # 加权求和
             # y = y.view(*org_shape)
             # Apply weights and sum over slots
-            y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # -> (N, hidden) [1360,64]
-            y = y.view(*org_shape)  # -> (batch, seq, hidden)
+            y = (y * topk_weight.unsqueeze(-1)).sum(dim=1)  # -> (N, hidden) [1360,64]  加权求和
+            y = y.view(*org_shape)  # -> (batch, seq, hidden)[4,340,64]
         else:
             # 推理时，使用优化的moe_infer方法避免重复计算
             y = self.moe_infer(x, flat_topk_idx, topk_weight.view(-1, 1)).view(*org_shape)

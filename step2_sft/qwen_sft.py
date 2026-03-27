@@ -15,8 +15,8 @@ from datasets import load_dataset
 import os
 
 # ==================== 配置参数 ====================
-model_name = "Qwen/Qwen2.5-4B"  # 实际模型名，可根据需要调整
-output_dir = "./qwen2.5-4b-sft"  # 模型保存路径
+model_name = "Qwen/Qwen3.5-4B"  # 实际模型名，可根据需要调整
+output_dir = "../qwen3.5-4b-sft"  # 模型保存路径
 dataset_name = "yahma/alpaca-cleaned"  # 示例数据集，也可替换为自己的数据
 
 # 量化配置（4-bit）
