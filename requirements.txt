@@ -4,3 +4,4 @@ matplotlib
 swanlab
 datasets
 peft
+dashscope

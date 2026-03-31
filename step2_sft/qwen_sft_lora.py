@@ -122,9 +122,10 @@ if tokenizer.pad_token is None:
 model = AutoModelForCausalLM.from_pretrained(
     MODEL_NAME,
     # torch_dtype=torch.bfloat16,
-    torch_dtype=torch.float32,
+    #torch_dtype=torch.float32,
     device_map="auto",
-    trust_remote_code=True
+    trust_remote_code=True,
+    torch_dtype=torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16,
 )
 # model = AutoModelForCausalLM.from_pretrained(
 #     MODEL_NAME,
