@@ -1,3 +1,5 @@
+from distutils import dist
+
 import argparse
 
 import json
@@ -157,7 +159,8 @@ class Qwen35Dataset(Dataset):
 
 
 
-
+def is_main_process():
+    return not dist.is_initialized() or dist.get_rank() == 0
 
 
 
@@ -166,6 +169,8 @@ def main():
     parser.add_argument('--model_name', default='Qwen/Qwen3.5-4B"', type=str,help="模型名")
     parser.add_argument('--output_path', default='../../llm_sft', type=str,help="输出目录")
     parser.add_argument('--train_data', default='./sft.json', type=str,help="训练文件")
+    parser.add_argument('--use_wandb', action='store_true', help='是否使用wandb')
+    parser.add_argument('--wandb_key', type=str, default=None, help='wandb API key')
     # LoRA 超参数
     parser.add_argument('--LORA_R', default=16, type=int,help="LoRA 超参数 LORA_R")
     parser.add_argument('--LORA_ALPHA', default=32, type=int,help="LoRA 超参数 LORA_ALPHA")
@@ -187,6 +192,17 @@ def main():
     WARMUP_RATIO = 0.03
     MAX_SEQ_LEN = 2048
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+
+    # ----- WandB 初始化 -----
+    wandb = None
+    if args.use_wandb and is_main_process():
+        import wandb as wandb_lib
+        if args.wandb_key is None:
+            args.wandb_key ="../../../llm_data/config.txt"
+        wandb_lib.login(key=args.wandb_key)
+        run_name = f'pretrain_bs{args.batch_size}_lr{args.learning_rate}'
+        wandb_lib.init(project=args.wandb_project, name=run_name, config=vars(args))
+        wandb = wandb_lib
 
     # ----------------------------- 2. 加载模型和分词器 -----------------------------
     print("Loading model and tokenizer...")
@@ -243,9 +259,14 @@ def main():
         num_training_steps=total_steps
     )
 
-    # ----------------------------- 5. 训练循环 -----------------------------
+    import wandb  # 新增导入
+
+    # ----------------------------- 训练准备 -----------------------------
+    # 假设 wandb 已在训练脚本开头初始化，例如：
+    # wandb.init(project="your_project", name="run_name", config={...})
     model.train()
     global_step = 0
+    step_idx = 0  # 新增：用于 wandb 的全局 step 计数器（每个 batch 递增）
     for epoch in range(NUM_EPOCHS):
         epoch_loss = 0
         progress_bar = tqdm(dataloader, desc=f"Epoch {epoch + 1}/{NUM_EPOCHS}")
@@ -263,24 +284,85 @@ def main():
             loss = outputs.loss / GRAD_ACCUM_STEPS
             loss.backward()
 
-            epoch_loss += loss.item() * GRAD_ACCUM_STEPS
+            # 记录原始 loss 和当前学习率（每个 batch）
+            raw_loss = outputs.loss.item()  # 未除以 GRAD_ACCUM_STEPS 的原始 loss
+            current_lr = scheduler.get_last_lr()[0]
+            wandb.log({
+                "train/loss": raw_loss,
+                "train/lr": current_lr,
+            }, step=step_idx)  # step_idx 从 0 开始，每个 batch 递增
+            step_idx += 1
+
+            epoch_loss += loss.item() * GRAD_ACCUM_STEPS  # 累加原始 loss
 
             if (step + 1) % GRAD_ACCUM_STEPS == 0:
+                # 梯度裁剪
                 torch.nn.utils.clip_grad_norm_(
                     filter(lambda p: p.requires_grad, model.parameters()),
                     max_norm=1.0
                 )
+                # 可选：记录梯度范数
+                total_norm = 0.0
+                for p in model.parameters():
+                    if p.grad is not None:
+                        param_norm = p.grad.data.norm(2)
+                        total_norm += param_norm.item() ** 2
+                total_norm = total_norm ** 0.5
+                wandb.log({"train/grad_norm": total_norm}, step=step_idx - 1)  # 使用刚记录的 step
+
                 optimizer.step()
                 scheduler.step()
                 optimizer.zero_grad()
                 global_step += 1
 
             progress_bar.set_postfix({
-                "loss": loss.item() * GRAD_ACCUM_STEPS,
+                "loss": loss.item() * GRAD_ACCUM_STEPS,  # 显示原始 loss
                 "lr": scheduler.get_last_lr()[0]
             })
 
-        print(f"Epoch {epoch + 1} avg loss: {epoch_loss / len(dataloader):.4f}")
+        # Epoch 结束，计算平均 loss
+        avg_loss = epoch_loss / len(dataloader)
+        print(f"Epoch {epoch + 1} avg loss: {avg_loss:.4f}")
+        wandb.log({"train/epoch_loss": avg_loss}, step=step_idx - 1)  # 可选，step 用最后一个 step_idx
+
+    # # ----------------------------- 5. 训练循环 -----------------------------
+    # model.train()
+    # global_step = 0
+    # for epoch in range(NUM_EPOCHS):
+    #     epoch_loss = 0
+    #     progress_bar = tqdm(dataloader, desc=f"Epoch {epoch + 1}/{NUM_EPOCHS}")
+    #
+    #     for step, batch in enumerate(progress_bar):
+    #         input_ids = batch["input_ids"].to(DEVICE)
+    #         attention_mask = batch["attention_mask"].to(DEVICE)
+    #         labels = batch["labels"].to(DEVICE)
+    #
+    #         outputs = model(
+    #             input_ids=input_ids,
+    #             attention_mask=attention_mask,
+    #             labels=labels
+    #         )
+    #         loss = outputs.loss / GRAD_ACCUM_STEPS
+    #         loss.backward()
+    #
+    #         epoch_loss += loss.item() * GRAD_ACCUM_STEPS
+    #
+    #         if (step + 1) % GRAD_ACCUM_STEPS == 0:
+    #             torch.nn.utils.clip_grad_norm_(
+    #                 filter(lambda p: p.requires_grad, model.parameters()),
+    #                 max_norm=1.0
+    #             )
+    #             optimizer.step()
+    #             scheduler.step()
+    #             optimizer.zero_grad()
+    #             global_step += 1
+    #
+    #         progress_bar.set_postfix({
+    #             "loss": loss.item() * GRAD_ACCUM_STEPS,
+    #             "lr": scheduler.get_last_lr()[0]
+    #         })
+    #
+    #     print(f"Epoch {epoch + 1} avg loss: {epoch_loss / len(dataloader):.4f}")
 
     # ----------------------------- 6. 保存 LoRA 权重 -----------------------------
     lora_state_dict = {}
