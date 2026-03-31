@@ -37,7 +37,7 @@ def test():
 
 
 def main():
-    parser = argparse.ArgumentParser(description="MiniMind模型推理与对话")
+    parser = argparse.ArgumentParser(description="llmmind_eva")
     parser.add_argument('--load_from', default='model', type=str,
                         help="模型加载路径（model=原生torch权重，其他路径=transformers格式）")
     parser.add_argument('--save_dir', default='out', type=str, help="模型权重目录")
