@@ -166,7 +166,7 @@ def is_main_process():
 
 def main():
     parser = argparse.ArgumentParser(description="llmmind_sft")
-    parser.add_argument('--model_name', default='Qwen/Qwen3.5-4B"', type=str,help="模型名")
+    parser.add_argument('--model_name', default='Qwen/Qwen3.5-4B', type=str,help="模型名")
     parser.add_argument('--output_path', default='../../llm_sft', type=str,help="输出目录")
     parser.add_argument('--train_data', default='./sft.json', type=str,help="训练文件")
     parser.add_argument('--use_wandb', action='store_true', help='是否使用wandb')
