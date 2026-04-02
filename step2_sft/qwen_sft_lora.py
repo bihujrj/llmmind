@@ -75,7 +75,7 @@ def inject_lora(model, r, alpha, dropout):
         if isinstance(module, nn.Linear) and any(t in name for t in target_modules):
             setattr(model, name, LoRALinear(module, r, alpha, dropout))
         else:
-            inject_lora(module, target_modules, r, alpha, dropout)
+            inject_lora(module, r, alpha, dropout)
     return model
 
 
