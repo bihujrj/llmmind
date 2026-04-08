@@ -5,3 +5,4 @@ swanlab
 datasets
 peft
 dashscope
+wandb
