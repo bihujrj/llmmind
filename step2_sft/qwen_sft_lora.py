@@ -55,16 +55,34 @@ def inject_lora(model, r=8, alpha=16, dropout=0.0):
             child_name = name.split(".")[-1]
             parent = model.get_submodule(parent_path)
             lora_layer = LoRALinear(module, r, alpha, dropout)
-            setattr(parent, child_name, lora_layer)
+            setattr(parent, child_name, lora_layer)  #将原来注意力替换成lora计算
     return model
+
+# def merge_lora_weights(model):
+#     for name, module in list(model.named_modules()):
+#         if isinstance(module, LoRALinear):
+#             parent_path = ".".join(name.split(".")[:-1])
+#             child_name = name.split(".")[-1]
+#             parent = model.get_submodule(parent_path)
+#             setattr(parent, child_name, module.original_linear)
+#     return model
 
 def merge_lora_weights(model):
     for name, module in list(model.named_modules()):
         if isinstance(module, LoRALinear):
+            # 1. 数值合并：将 LoRA 增量加到原始权重上
+            with torch.no_grad():
+                # 计算增量: delta_W = (lora_B.weight @ lora_A.weight) * scaling
+                delta_w = (module.lora_B.weight @ module.lora_A.weight) * module.scaling
+                module.original_linear.weight.add_(delta_w)
+                # 如果有 bias 且 LoRA 也修改了 bias（本例中没有，但安全起见）
+                # 如果 LoRA 层有 bias 处理，这里也需要合并
+
+            # 2. 结构替换：将 LoRALinear 替换为已合并权重的 original_linear
             parent_path = ".".join(name.split(".")[:-1])
             child_name = name.split(".")[-1]
             parent = model.get_submodule(parent_path)
-            setattr(parent, child_name, module.original_linear)
+            setattr(parent, child_name, module.original_linear)    #将注意力指向修改后的lora叠加的结果
     return model
 
 # ----------------------------- 数据集 -----------------------------
