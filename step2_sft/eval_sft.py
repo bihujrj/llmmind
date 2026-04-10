@@ -1,5 +1,9 @@
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
+import argparse
+import json
+import math
+import os
 
 def load_model(model_path: str):
     """加载微调后的模型和分词器"""
