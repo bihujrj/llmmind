@@ -52,7 +52,7 @@ def inject_lora(model, r=8, alpha=16, dropout=0.0):
     for name, module in list(model.named_modules()):
         if isinstance(module, nn.Linear) and any(t in name for t in target_modules):
             parent_path = ".".join(name.split(".")[:-1])
-            child_name = name.split(".")[-1]
+            child_name = name.split(".")[-1] #叶子节点
             parent = model.get_submodule(parent_path)
             lora_layer = LoRALinear(module, r, alpha, dropout)
             setattr(parent, child_name, lora_layer)  #将原来注意力替换成lora计算
@@ -80,7 +80,7 @@ def merge_lora_weights(model):
 
             # 2. 结构替换：将 LoRALinear 替换为已合并权重的 original_linear
             parent_path = ".".join(name.split(".")[:-1])
-            child_name = name.split(".")[-1]
+            child_name = name.split(".")[-1]    #叶子节点
             parent = model.get_submodule(parent_path)
             setattr(parent, child_name, module.original_linear)    #将注意力指向修改后的lora叠加的结果
     return model
