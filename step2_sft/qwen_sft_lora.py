@@ -47,7 +47,7 @@ class LoRALinear(nn.Module):
 
 def inject_lora(model, r=8, alpha=16, dropout=0.0):
     target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
-    n_,model_=list(model.named_modules())
+    n_=list(model.named_modules())
     print(n_)
     for name, module in list(model.named_modules()):
         if isinstance(module, nn.Linear) and any(t in name for t in target_modules):
