@@ -73,7 +73,7 @@ def generate_response(model, tokenizer, prompt: str, max_new_tokens=150, tempera
     return response
 
 def main():
-    parser = argparse.ArgumentParser(description="Qwen3.5 LoRA SFT")
+    parser = argparse.ArgumentParser(description="Qwen3.5 LoRA SFT evl")
     parser.add_argument('--model_path', default='../../sft_model', type=str)
     args = parser.parse_args()
     model_path = args.model_path
@@ -99,11 +99,12 @@ def main():
         ("小麦丰收", "雀巢咖啡"),
     ]
     for idx, (prompt_pre_comment, prompt_adstr) in enumerate(test_cases, 1):
+        input_text = "这是用户的观点:" + prompt_pre_comment + ", 结合这个观点,推荐下面的产品:" + prompt_adstr + " "
+
         print(f"\n[测试 {idx}]")
         print(f"指令: {instruction}")
         if input_text:
             print(f"输入: {input_text}")
-        input_text = "这是用户的观点:" + prompt_pre_comment + ", 结合这个观点,推荐下面的产品:" + prompt_adstr + " "
         prompt = build_prompt(instruction, input_text)
         response = generate_response(model, tokenizer, prompt)
         print(f"回答: {response}")
