@@ -130,7 +130,7 @@ def clear_memory():
 def main():
     parser = argparse.ArgumentParser(description="Qwen3.5 LoRA SFT")
     parser.add_argument('--model_name', default='Qwen/Qwen3.5-4B', type=str)
-    parser.add_argument('--output_path', default='./sft_model', type=str)
+    parser.add_argument('--output_path', default='../../sft_model', type=str)
     parser.add_argument('--train_data', default='./sft.json', type=str)
     parser.add_argument('--use_wandb', action='store_true')
     parser.add_argument('--wandb_key', type=str)
@@ -174,7 +174,7 @@ def main():
         print(f"数据不存在: {args.train_data}")
         return
     dataset = Qwen35Dataset(args.train_data, tokenizer, MAX_SEQ_LEN)
-    dataloader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=0)
+    dataloader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
 
     # 优化器
     lora_params = [p for p in model.parameters() if p.requires_grad]
