@@ -48,6 +48,9 @@ class LoRALinear(nn.Module):
 def inject_lora(model, r=8, alpha=16, dropout=0.0):
     target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"]
     n_=list(model.named_modules())
+    with open('model_detail_org.txt','w') as f:
+        f.write(str(n_))
+    f.close()
     print(n_)
     for name, module in list(model.named_modules()):
         if isinstance(module, nn.Linear) and any(t in name for t in target_modules):
@@ -130,7 +133,7 @@ def clear_memory():
 def main():
     parser = argparse.ArgumentParser(description="Qwen3.5 LoRA SFT")
     parser.add_argument('--model_name', default='Qwen/Qwen3.5-4B', type=str)
-    parser.add_argument('--output_path', default='../../sft_model', type=str)
+    parser.add_argument('--output_path', default='../../sft_model_debug', type=str)
     parser.add_argument('--train_data', default='./sft.json', type=str)
     parser.add_argument('--use_wandb', action='store_true')
     parser.add_argument('--wandb_key', type=str)
